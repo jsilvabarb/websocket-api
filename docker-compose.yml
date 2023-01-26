@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  chat:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
+      - MONGO_HOSTNAME=db
+      - MONGO_PORT=$MONGO_PORT
+      - MONGO_DB=$MONGO_DB
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/app
+    networks:
+      - app-network-chat
+    command: yarn start
+  db:
+    image: mongo:4.1.8-xenial
+    container_name: mongodb
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - app-network-chat
+networks:
+  app-network-chat:
+    driver: bridge
+volumes:
+  dbdata:
